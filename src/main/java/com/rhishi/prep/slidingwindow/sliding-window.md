@@ -253,3 +253,153 @@ Because the HashSet stores only unique characters in the current window.
 * Removing only one character when duplicate is found. Use `while`, not `if`.
 * Forgetting to update `maxLength` after adding the current character.
 * Thinking nested `while` makes it `O(n²)`. It is still `O(n)` because `windowStart` never moves backward.
+
+## Problem: Longest Substring with At Most K Distinct Characters
+
+### Pattern
+
+Variable Sliding Window + HashMap (Frequency Counter)
+
+---
+
+### Recognition Clues
+
+Use this pattern when the problem mentions:
+
+* longest substring
+* at most K distinct characters
+* contiguous substring
+* frequency/count of elements inside the current window
+
+---
+
+### State
+
+```java
+int windowStart;
+Map<Character, Integer> charFrequency;
+int maxLength;
+```
+
+---
+
+### Invariant
+
+The current window always contains **at most K distinct characters**.
+
+```text
+charFrequency contains exactly the characters between
+windowStart and windowEnd.
+
+charFrequency.size() <= k
+```
+
+---
+
+### Core Idea
+
+Expand the window by adding the current character.
+
+If the window becomes invalid (more than K distinct characters), shrink from the left until it becomes valid again.
+
+Update the answer only after the window is valid.
+
+---
+
+### Algorithm
+
+```text
+Expand
+
+↓
+
+While(window is invalid)
+
+    Decrease left character frequency
+
+    Remove character if frequency becomes 0
+
+    Move windowStart
+
+↓
+
+Process current window
+```
+
+---
+
+### Template
+
+```java
+public static int longestSubstringWithKDistinct(String s, int k) {
+
+    int windowStart = 0;
+    int maxLength = 0;
+
+    Map<Character, Integer> charFrequency = new HashMap<>();
+
+    for (int windowEnd = 0; windowEnd < s.length(); windowEnd++) {
+
+        char current = s.charAt(windowEnd);
+
+        charFrequency.put(
+                current,
+                charFrequency.getOrDefault(current, 0) + 1
+        );
+
+        while (charFrequency.size() > k) {
+
+            char left = s.charAt(windowStart);
+
+            charFrequency.put(left, charFrequency.get(left) - 1);
+
+            if (charFrequency.get(left) == 0) {
+                charFrequency.remove(left);
+            }
+
+            windowStart++;
+        }
+
+        maxLength = Math.max(
+                maxLength,
+                windowEnd - windowStart + 1
+        );
+    }
+
+    return maxLength;
+}
+```
+
+---
+
+### Complexity
+
+Time: `O(n)`
+
+Each character enters and leaves the window at most once.
+
+Space: `O(k)`
+
+The map stores at most `k` distinct characters (bounded by the character set size).
+
+---
+
+### Common Mistakes
+
+* Checking validity before adding the current character.
+* Updating the answer before shrinking the invalid window.
+* Forgetting to remove a character when its frequency becomes 0.
+* Using a `HashSet` instead of a `HashMap` when frequencies are required.
+
+---
+
+### Backend Connection
+
+This pattern appears whenever a moving window needs to maintain frequencies instead of just presence.
+
+Examples:
+
+* Top API consumers in the last N minutes.
+* Most frequent events in a rolling window.
+* Log aggregation and stream analytics.
+* User activity analysis over a moving time window.
