@@ -20,7 +20,7 @@
 * [x] Two Pointers
 * [x] Fixed Sliding Window
 * [x] Variable Sliding Window
-* [ ] Prefix Sum
+* [x] Prefix Sum
 * [ ] Binary Search
 * [ ] Matrix Traversal
 * [ ] Sorting Techniques
